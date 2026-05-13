@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ms-usuario
+  datasource:
+    url: jdbc:h2:mem:usuariodb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    show-sql: true
+  h2:
+    console:
+      enabled: true
