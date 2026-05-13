@@ -1,0 +1,11 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Java / Backend
+target/
+*.class
+.mvn/
+.idea/
+.vscode/
+*.jar
