@@ -25,8 +25,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // URL de tu API Gateway en puerto 8080
-    const urlBase = "http://localhost:8080/api/usuarios"; 
+    // URL de tu API Gateway en puerto 8090
+    const urlBase = "http://localhost:8090/api/usuarios";
     const endpoint = esRegistro ? `${urlBase}/registrar` : `${urlBase}/login`;
 
     try {

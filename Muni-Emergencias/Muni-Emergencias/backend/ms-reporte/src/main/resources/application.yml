@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8092  # Cambiado de 8082 a 8092 porque el 8082 está ocupado por System
 
 spring:
   application:
@@ -10,8 +10,10 @@ spring:
     username: sa
     password: password
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect # Agregado para mejor compatibilidad
     hibernate:
       ddl-auto: update
   h2:
     console:
       enabled: true
+      path: /h2-console # Esto te permite ver la BD en http://localhost:8092/h2-console

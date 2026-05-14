@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
 
 spring:
   application:
@@ -7,33 +7,28 @@ spring:
   cloud:
     gateway:
       routes:
-        # Ruta hacia el ms-usuario
+        # Ruta hacia el ms-usuario (Login y Registro)
         - id: ms-usuario
-          uri: http://localhost:8081
+          uri: http://localhost:8091
           predicates:
             - Path=/api/usuarios/**
-            
+
         # Ruta hacia el ms-reporte
         - id: ms-reporte
-          uri: http://localhost:8082
+          uri: http://localhost:8092
           predicates:
             - Path=/api/reportes/**
-            
+
         # Ruta hacia el ms-alerta
         - id: ms-alerta
-          uri: http://localhost:8083
+          uri: http://localhost:8093
           predicates:
             - Path=/api/alertas/**
-            
-      # ¡Súper importante para el Frontend! (Evita el error CORS)
+
+      # Configuración de CORS corregida
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
+            allowedOrigins: "http://localhost:5173"
+            allowedMethods: "*"
             allowedHeaders: "*"
