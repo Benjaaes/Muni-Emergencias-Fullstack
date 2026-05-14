@@ -1,11 +1,22 @@
-# Frontend
-frontend/node_modules/
+# Node / Dependencias (Aplica para frontend, backend o la raíz)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Frontend Build
 frontend/dist/
+build/
 
 # Java / Backend
 target/
 *.class
-.mvn/
+*.jar
+
+# Variables de entorno 
+.env
+.env.local
+
+# IDEs y SO
 .idea/
 .vscode/
-*.jar
+.DS_Store
