@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense para saber los atributos posibles.
+    // Mantenga el puntero para ver las descripciones de los existentes atributos.
+    // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "ApiGatewayApplication",
+            "request": "launch",
+            "mainClass": "com.valle.api_gateway.ApiGatewayApplication",
+            "projectName": "api-gateway"
+        },
+        {
+            "type": "java",
+            "name": "MsAlertaApplication",
+            "request": "launch",
+            "mainClass": "com.valle.ms_alerta.MsAlertaApplication",
+            "projectName": "ms-alerta"
+        },
+        {
+            "type": "java",
+            "name": "MsReporteApplication",
+            "request": "launch",
+            "mainClass": "com.valle.ms_reporte.MsReporteApplication",
+            "projectName": "ms-reporte"
+        },
+        {
+            "type": "java",
+            "name": "MsUsuarioApplication",
+            "request": "launch",
+            "mainClass": "com.valle.ms_usuario.MsUsuarioApplication",
+            "projectName": "ms-usuario"
+        }
+    ]
+}

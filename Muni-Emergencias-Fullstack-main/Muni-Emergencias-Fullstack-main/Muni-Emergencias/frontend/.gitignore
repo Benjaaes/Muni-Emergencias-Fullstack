@@ -1,0 +1,35 @@
+# --- Frontend (React / Vite) ---
+# Ignora las librerías pesadas de Node
+node_modules/
+frontend/node_modules/
+# Ignora la carpeta de producción
+frontend/dist/
+# Ignora variables de entorno locales (seguridad)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- Backend (Java / Spring Boot / Maven) ---
+# Ignora los archivos compilados
+target/
+api-gateway/target/
+ms-usuario/target/
+ms-reporte/target/
+ms-alerta/target/
+*.class
+
+# --- IDEs y Editores ---
+.vscode/
+.idea/
+*.iml
+*.iws
+.project
+.settings/
+.classpath/
+
+# --- Otros ---
+.DS_Store
+Thumbs.db
+*.log
