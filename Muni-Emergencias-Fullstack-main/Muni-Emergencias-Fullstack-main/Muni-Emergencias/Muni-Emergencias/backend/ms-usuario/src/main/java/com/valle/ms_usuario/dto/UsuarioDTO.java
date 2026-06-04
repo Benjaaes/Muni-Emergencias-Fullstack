@@ -8,4 +8,5 @@ public class UsuarioDTO {
     private String rut;
     private String rol;
     private String email;
+    private String password;
 }

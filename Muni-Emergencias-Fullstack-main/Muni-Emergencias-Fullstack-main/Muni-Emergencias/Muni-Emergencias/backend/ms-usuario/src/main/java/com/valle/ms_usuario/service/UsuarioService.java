@@ -14,17 +14,22 @@ public class UsuarioService {
     private UsuarioRepository repository;
 
     public Usuario registrar(UsuarioDTO dto) {
-        // Aplicando el Builder para construir el objeto
         Usuario nuevo = Usuario.builder()
                 .nombre(dto.getNombre())
                 .rut(dto.getRut())
                 .rol(dto.getRol())
                 .email(dto.getEmail())
+                .password(dto.getPassword())
                 .build();
         return repository.save(nuevo);
     }
 
     public List<Usuario> obtenerTodos() {
         return repository.findAll();
+    }
+
+    public Usuario login(String email, String password) {
+        return repository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new RuntimeException("Credenciales incorrectas"));
     }
 }

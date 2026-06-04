@@ -8,14 +8,16 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder // <--- PATRÓN DE DISEÑO
+@Builder
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String nombre;
     private String rut;
-    private String rol; // Ejemplo: "ADMIN", "BOMBERO", "VECINO"
+    private String rol;
     private String email;
+    private String password;
 }
