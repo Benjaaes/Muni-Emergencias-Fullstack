@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: postgres-emergencias
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: duoc
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - emergencias-network
+
+  ms-usuario:
+    build: ./backend/ms-usuario
+    container_name: ms-usuario
+    ports:
+      - "8091:8091"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bd_usuario
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: duoc
+    depends_on:
+      - postgres
+    networks:
+      - emergencias-network
+
+  ms-reporte:
+    build: ./backend/ms-reporte
+    container_name: ms-reporte
+    ports:
+      - "8092:8092"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bd_reporte
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: duoc
+    depends_on:
+      - postgres
+    networks:
+      - emergencias-network
+
+  ms-alerta:
+    build: ./backend/ms-alerta
+    container_name: ms-alerta
+    ports:
+      - "8093:8093"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bd_alerta
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: duoc
+    depends_on:
+      - postgres
+    networks:
+      - emergencias-network
+
+  api-gateway:
+    build: ./backend/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8090:8090"
+    depends_on:
+      - ms-usuario
+      - ms-reporte
+      - ms-alerta
+    networks:
+      - emergencias-network
+
+  frontend:
+    build: ./frontend
+    container_name: frontend-emergencias
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - emergencias-network
+
+networks:
+  emergencias-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

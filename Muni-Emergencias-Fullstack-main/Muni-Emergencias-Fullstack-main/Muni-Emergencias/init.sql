@@ -1,0 +1,3 @@
+CREATE DATABASE bd_usuario;
+CREATE DATABASE bd_reporte;
+CREATE DATABASE bd_alerta;
