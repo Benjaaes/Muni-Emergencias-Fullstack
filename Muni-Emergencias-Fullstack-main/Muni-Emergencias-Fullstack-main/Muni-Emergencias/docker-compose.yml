@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   postgres:
     image: postgres:15
     container_name: postgres-emergencias
@@ -17,7 +16,7 @@ services:
       - emergencias-network
 
   ms-usuario:
-    build: ./backend/ms-usuario
+    build: ./Muni-Emergencias/backend/ms-usuario
     container_name: ms-usuario
     ports:
       - "8091:8091"
@@ -31,7 +30,7 @@ services:
       - emergencias-network
 
   ms-reporte:
-    build: ./backend/ms-reporte
+    build: ./Muni-Emergencias/backend/ms-reporte
     container_name: ms-reporte
     ports:
       - "8092:8092"
@@ -45,7 +44,7 @@ services:
       - emergencias-network
 
   ms-alerta:
-    build: ./backend/ms-alerta
+    build: ./Muni-Emergencias/backend/ms-alerta
     container_name: ms-alerta
     ports:
       - "8093:8093"
@@ -59,7 +58,7 @@ services:
       - emergencias-network
 
   api-gateway:
-    build: ./backend/api-gateway
+    build: ./Muni-Emergencias/backend/api-gateway
     container_name: api-gateway
     ports:
       - "8090:8090"
@@ -74,7 +73,7 @@ services:
     build: ./frontend
     container_name: frontend-emergencias
     ports:
-      - "80:80"
+      - "5173:5173"
     depends_on:
       - api-gateway
     networks:

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -16,8 +18,9 @@ public class UsuarioController {
     private UsuarioService service;
 
     @PostMapping("/registrar")
-    public Usuario crear(@RequestBody UsuarioDTO dto) {
-        return service.registrar(dto);
+    public ResponseEntity<Usuario> crear(@RequestBody UsuarioDTO dto) {
+        Usuario nuevoUsuario = service.registrar(dto);
+        return ResponseEntity.ok(nuevoUsuario);
     }
 
     @GetMapping("/listar")
@@ -31,7 +34,9 @@ public class UsuarioController {
             Usuario usuario = service.login(credenciales.getEmail(), credenciales.getPassword());
             return ResponseEntity.ok(usuario);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(401).body("{\"mensaje\": \"Credenciales incorrectas\"}");
+            Map<String, String> respuestaError = new HashMap<>();
+            respuestaError.put("mensaje", "Credenciales incorrectas o agente no registrado");
+            return ResponseEntity.status(401).body(respuestaError);
         }
     }
 }
