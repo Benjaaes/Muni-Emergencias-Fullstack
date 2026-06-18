@@ -26,10 +26,9 @@
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
 
-        <!-- DEPENDENCIA DE CIRCUIT BREAKER AGREGA ACÁ -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+            <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
         </dependency>
 
         <dependency>

@@ -62,6 +62,10 @@ services:
     container_name: api-gateway
     ports:
       - "8090:8090"
+    environment:
+      - MS_USUARIO_HOST=ms-usuario
+      - MS_REPORTE_HOST=ms-reporte
+      - MS_ALERTA_HOST=ms-alerta
     depends_on:
       - ms-usuario
       - ms-reporte
@@ -73,7 +77,7 @@ services:
     build: ./frontend
     container_name: frontend-emergencias
     ports:
-      - "5173:5173"
+      - "5173:80"
     depends_on:
       - api-gateway
     networks:

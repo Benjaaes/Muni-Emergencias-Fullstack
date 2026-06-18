@@ -1,0 +1,7 @@
+ENLACES A REPOSITORIOS GITHUB - PROYECTO MUNI-EMERGENCIAS
+
+Repositorio Backend (Microservicios & API Gateway):
+https://github.com/Benjaaes/Muni-Emergencias-Fullstack/tree/main/Muni-Emergencias-Fullstack-main/Muni-Emergencias-Fullstack-main/Muni-Emergencias/Muni-Emergencias/backend
+
+Repositorio Frontend (React/Vite):
+https://github.com/Benjaaes/Muni-Emergencias-Fullstack/tree/main/Muni-Emergencias-Fullstack-main/Muni-Emergencias-Fullstack-main/Muni-Emergencias/frontend

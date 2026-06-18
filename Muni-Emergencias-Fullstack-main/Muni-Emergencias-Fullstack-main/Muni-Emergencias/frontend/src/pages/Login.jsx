@@ -1,110 +1,56 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { styled } from '@stitches/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-function Login() {
-  const [esRegistro, setEsRegistro] = useState(false);
-  const [formData, setFormData] = useState({ nombre: '', email: '', password: '' });
+const LoginOverlay = styled('div', { display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw', backgroundColor: '#0a0b10', fontFamily: 'system-ui, -apple-system, sans-serif', position: 'relative' });
+const SecurityCard = styled('div', { backgroundColor: 'rgba(20, 22, 33, 0.85)', backdropFilter: 'blur(12px)', padding: '48px 40px', borderRadius: '24px', boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 56, 56, 0.2)', width: '100%', maxWidth: '400px', border: '1px solid rgba(255, 255, 255, 0.05)' });
+const BrandHeader = styled('div', { textAlign: 'center', marginBottom: '36px' });
+const BadgeStatus = styled('span', { backgroundColor: 'rgba(255, 56, 56, 0.1)', color: '#ff3838', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', display: 'inline-block', marginBottom: '16px' });
+const MainTitle = styled('h1', { color: '#ffffff', fontSize: '26px', fontWeight: '800', margin: 0, letterSpacing: '-0.5px' });
+const SubTitle = styled('p', { color: '#6c7284', fontSize: '14px', margin: '8px 0 0 0' });
+const FieldWrapper = styled('div', { marginBottom: '24px', display: 'flex', flexDirection: 'column' });
+const FieldLabel = styled('label', { color: '#94a3b8', fontSize: '11px', fontWeight: '700', marginBottom: '8px', letterSpacing: '0.5px' });
+const PremiumInput = styled('input', { padding: '14px 16px', borderRadius: '12px', border: '1px solid #23263b', backgroundColor: '#121420', color: '#ffffff', fontSize: '15px', '&:focus': { outline: 'none', borderColor: '#ff3838', backgroundColor: '#161929' } });
+const CyberButton = styled('button', { width: '100%', padding: '16px', backgroundColor: '#ff3838', color: '#ffffff', border: 'none', borderRadius: '12px', fontWeight: '700', fontSize: '15px', cursor: 'pointer', transition: 'all 0.2s ease', '&:hover': { backgroundColor: '#e02828' } });
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const urlBase = "http://localhost:8090/api/usuarios";
-    const endpoint = esRegistro ? `${urlBase}/registrar` : `${urlBase}/login`;
     try {
-      const respuesta = await axios.post(endpoint, formData);
-      console.log("Respuesta del servidor:", respuesta.data);
-      if (esRegistro) {
-        alert("✔️ Credenciales autorizadas. Cuenta creada con éxito.");
-        setEsRegistro(false);
-      } else {
-        navigate('/reportes');
-      }
+      await axios.post('http://localhost:8090/api/usuarios/login', { email, password });
+      alert("Autenticación correcta. Inicializando pasarela de comando...");
+      navigate('/reportes');
     } catch (error) {
-      console.error("Error en la conexión:", error);
-      alert("⚠️ ALERTA DE SISTEMA: No se pudo conectar con la Central. Verifica el Gateway (8090).");
+      alert("Acceso denegado: Verifique sus credenciales.");
     }
   };
 
   return (
-    <div style={styles.appContainer}>
-      <div style={styles.card}>
-        <div style={styles.header}>
-          <div style={styles.logoBadge}>🔥</div>
-          <h2 style={styles.title}>SISTEMA DE EMERGENCIAS</h2>
-          <p style={styles.subtitle}>{esRegistro ? 'REGISTRO DE PERSONAL AUTORIZADO' : 'ACCESO RESTRINGIDO - CONCEPCIÓN'}</p>
-        </div>
-
-        <form onSubmit={handleSubmit} style={styles.form}>
-          {esRegistro && (
-            <div>
-              <label style={styles.label}>IDENTIFICACIÓN DEL AGENTE</label>
-              <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required style={styles.input} placeholder="Ej: Cmdte. Juan Pérez" />
-            </div>
-          )}
-          <div>
-            <label style={styles.label}>CORREO INSTITUCIONAL</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} required style={styles.input} placeholder="agente@concepcion.cl" />
-          </div>
-          <div>
-            <label style={styles.label}>CLAVE DE SEGURIDAD</label>
-            <input type="password" name="password" value={formData.password} onChange={handleChange} required style={styles.input} placeholder="••••••••" />
-          </div>
-          <button type="submit" style={styles.button}>
-            {esRegistro ? 'SOLICITAR ALTA EN EL SISTEMA' : 'INICIAR ENLACE SEGURO'}
-          </button>
+    <LoginOverlay>
+      <SecurityCard>
+        <BrandHeader>
+          <BadgeStatus>Terminal Operativa V2</BadgeStatus>
+          <MainTitle>Muni Valle del Sol</MainTitle>
+          <SubTitle>Centro Integrado de Gestión de Incendios</SubTitle>
+        </BrandHeader>
+        
+        <form onSubmit={handleLogin}>
+          <FieldWrapper>
+            <FieldLabel>OPERADOR CREDENCIAL (EMAIL)</FieldLabel>
+            <PremiumInput type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="agente@valledelsol.cl" required />
+          </FieldWrapper>
+          <FieldWrapper>
+            <FieldLabel>LLAVE DE ACCESO INTEGRADA</FieldLabel>
+            <PremiumInput type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••" required />
+          </FieldWrapper>
+          <CyberButton type="submit">ACCEDER AL COMANDO</CyberButton>
         </form>
-
-        <div style={styles.footer}>
-          <p style={styles.footerText}>{esRegistro ? '¿Ya posees credenciales activas?' : '¿Personal nuevo sin acceso?'}</p>
-          <button type="button" onClick={() => setEsRegistro(!esRegistro)} style={styles.switchButton}>
-            {esRegistro ? '← VOLVER AL INGRESO' : 'SOLICITAR CREDENCIALES'}
-          </button>
-        </div>
-      </div>
-    </div>
+      </SecurityCard>
+    </LoginOverlay>
   );
 }
-
-const styles = {
-  appContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    width: '100%',
-    backgroundColor: '#0a0a0a',
-    backgroundImage: 'radial-gradient(#333 1px, transparent 1px)',
-    backgroundSize: '30px 30px',
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    margin: 0,
-    boxSizing: 'border-box'
-  },
-  card: {
-    padding: '40px 50px',
-    borderRadius: '12px',
-    backgroundColor: '#171717',
-    border: '1px solid #dc2626',
-    boxShadow: '0 0 30px rgba(220, 38, 38, 0.15)',
-    width: '100%',
-    maxWidth: '450px',
-    boxSizing: 'border-box'
-  },
-  header: { textAlign: 'center', marginBottom: '35px', borderBottom: '1px solid #262626', paddingBottom: '20px' },
-  logoBadge: { fontSize: '3rem', filter: 'drop-shadow(0 0 10px red)', marginBottom: '10px' },
-  title: { color: '#fff', fontSize: '1.4rem', fontWeight: '800', margin: '0 0 5px 0', letterSpacing: '1px' },
-  subtitle: { color: '#ef4444', fontSize: '0.75rem', fontWeight: 'bold', letterSpacing: '2px', margin: 0 },
-  form: { display: 'flex', flexDirection: 'column', gap: '20px' },
-  label: { fontSize: '0.75rem', fontWeight: 'bold', color: '#a3a3a3', display: 'block', marginBottom: '8px', letterSpacing: '1px' },
-  input: { width: '100%', padding: '14px 15px', borderRadius: '6px', border: '1px solid #333', backgroundColor: '#111', color: '#fff', fontSize: '1rem', boxSizing: 'border-box', outline: 'none' },
-  button: { padding: '15px', background: 'linear-gradient(90deg, #dc2626 0%, #ea580c 100%)', color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.9rem', fontWeight: '800', letterSpacing: '1px', cursor: 'pointer', marginTop: '15px', boxShadow: '0 4px 15px rgba(220, 38, 38, 0.4)' },
-  footer: { marginTop: '30px', textAlign: 'center', borderTop: '1px solid #262626', paddingTop: '20px' },
-  footerText: { fontSize: '0.85rem', color: '#737373', margin: '0 0 10px 0' },
-  switchButton: { background: 'none', border: 'none', color: '#fbbf24', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem', letterSpacing: '1px' }
-};
-
-export default Login;
