@@ -18,9 +18,15 @@ public class UsuarioController {
     private UsuarioService service;
 
     @PostMapping("/registrar")
-    public ResponseEntity<Usuario> crear(@RequestBody UsuarioDTO dto) {
-        Usuario nuevoUsuario = service.registrar(dto);
-        return ResponseEntity.ok(nuevoUsuario);
+    public ResponseEntity<?> crear(@RequestBody UsuarioDTO dto) {
+        try {
+            Usuario nuevoUsuario = service.registrar(dto);
+            return ResponseEntity.status(201).body(nuevoUsuario);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("mensaje", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
     }
 
     @GetMapping("/listar")
