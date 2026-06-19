@@ -15,18 +15,26 @@ public class UsuarioService {
     private UsuarioRepository repository;
 
     public Usuario registrar(UsuarioDTO dto) {
-        if (repository.existsByEmail(dto.getEmail())) {
+        if (dto.getEmail() == null || dto.getPassword() == null) {
+            throw new RuntimeException("Email y contraseña son obligatorios");
+        }
+
+        String email = dto.getEmail().trim();
+        if (repository.existsByEmail(email)) {
             throw new RuntimeException("El correo ya está registrado");
         }
+
         String hashPassword = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
 
         Usuario nuevo = Usuario.builder()
-                .nombre(dto.getNombre() != null && !dto.getNombre().isEmpty() ? dto.getNombre() : "Operador Nuevo")
-                .rut(dto.getRut() != null && !dto.getRut().isEmpty() ? dto.getRut() : "Sin RUT")
-                .rol(dto.getRol() != null && !dto.getRol().isEmpty() ? dto.getRol() : "OPERADOR")
-                .email(dto.getEmail())
+                .nombre(dto.getNombre() != null && !dto.getNombre().trim().isEmpty() ? dto.getNombre().trim()
+                        : "Usuario Nuevo")
+                .rut(dto.getRut() != null && !dto.getRut().trim().isEmpty() ? dto.getRut().trim() : "Sin RUT")
+                .rol("USER") // Rol por defecto
+                .email(email)
                 .password(hashPassword)
                 .build();
+
         return repository.save(nuevo);
     }
 
@@ -35,12 +43,19 @@ public class UsuarioService {
     }
 
     public Usuario login(String email, String password) {
-        Usuario usuario = repository.findByEmail(email)
+        if (email == null || password == null) {
+            throw new RuntimeException("Credenciales incorrectas");
+        }
+
+        Usuario usuario = repository.findByEmail(email.trim())
                 .orElseThrow(() -> new RuntimeException("Credenciales incorrectas"));
-                
+
+        // Única validación: ¿La contraseña coincide usando BCrypt?
         if (!BCrypt.checkpw(password, usuario.getPassword())) {
             throw new RuntimeException("Credenciales incorrectas");
         }
+
+        // Retornamos el usuario (sin restricciones estrictas de rol o dominio)
         return usuario;
     }
 }
