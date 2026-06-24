@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UsuarioService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">com.valle.ms_usuario.service</a> &gt; <span class="el_source">UsuarioService.java</span></div><h1>UsuarioService.java</h1><pre class="source lang-java linenums">package com.valle.ms_usuario.service;
+
+import com.valle.ms_usuario.dto.UsuarioDTO;
+import com.valle.ms_usuario.model.Usuario;
+import com.valle.ms_usuario.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.mindrot.jbcrypt.BCrypt;
+import java.util.List;
+
+@Service
+<span class="fc" id="L12">public class UsuarioService {</span>
+
+    @Autowired
+    private UsuarioRepository repository;
+
+    public Usuario registrar(UsuarioDTO dto) {
+<span class="pc bpc" id="L18" title="1 of 4 branches missed.">        if (dto.getEmail() == null || dto.getPassword() == null) {</span>
+<span class="fc" id="L19">            throw new RuntimeException(&quot;Email y contraseña son obligatorios&quot;);</span>
+        }
+
+<span class="fc" id="L22">        String email = dto.getEmail().trim();</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (repository.existsByEmail(email)) {</span>
+<span class="fc" id="L24">            throw new RuntimeException(&quot;El correo ya está registrado&quot;);</span>
+        }
+
+<span class="fc" id="L27">        String hashPassword = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());</span>
+
+<span class="fc" id="L29">        Usuario nuevo = new Usuario(</span>
+<span class="pc bpc" id="L30" title="1 of 4 branches missed.">                dto.getNombre() != null &amp;&amp; !dto.getNombre().trim().isEmpty() ? dto.getNombre().trim() : &quot;Usuario Nuevo&quot;,</span>
+<span class="pc bpc" id="L31" title="3 of 4 branches missed.">                dto.getRut() != null &amp;&amp; !dto.getRut().trim().isEmpty() ? dto.getRut().trim() : &quot;Sin RUT&quot;,</span>
+                &quot;USER&quot;, // Rol por defecto
+                email,
+                hashPassword
+        );
+
+<span class="fc" id="L37">        return repository.save(nuevo);</span>
+    }
+
+    public List&lt;Usuario&gt; obtenerTodos() {
+<span class="fc" id="L41">        return repository.findAll();</span>
+    }
+
+    public Usuario login(String email, String password) {
+<span class="pc bpc" id="L45" title="1 of 4 branches missed.">        if (email == null || password == null) {</span>
+<span class="fc" id="L46">            throw new RuntimeException(&quot;Credenciales incorrectas&quot;);</span>
+        }
+
+<span class="fc" id="L49">        Usuario usuario = repository.findByEmail(email.trim())</span>
+<span class="fc" id="L50">                .orElseThrow(() -&gt; new RuntimeException(&quot;Credenciales incorrectas&quot;));</span>
+
+        // Única validación: ¿La contraseña coincide usando BCrypt?
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (!BCrypt.checkpw(password, usuario.getPassword())) {</span>
+<span class="fc" id="L54">            throw new RuntimeException(&quot;Credenciales incorrectas&quot;);</span>
+        }
+
+        // Retornamos el usuario (sin restricciones estrictas de rol o dominio)
+<span class="fc" id="L58">        return usuario;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

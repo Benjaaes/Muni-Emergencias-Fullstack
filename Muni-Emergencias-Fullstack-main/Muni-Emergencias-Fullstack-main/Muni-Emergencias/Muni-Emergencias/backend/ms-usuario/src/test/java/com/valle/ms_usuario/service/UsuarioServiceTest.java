@@ -101,4 +101,50 @@ public class UsuarioServiceTest {
 
         assertTrue(exception.getMessage().contains("Credenciales incorrectas"));
     }
+
+    @Test
+    void registrar_Excepcion_FaltaEmail() {
+        dto.setEmail(null);
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            service.registrar(dto);
+        });
+        assertEquals("Email y contraseña son obligatorios", exception.getMessage());
+    }
+
+    @Test
+    void registrar_Excepcion_EmailExistente() {
+        when(repository.existsByEmail("agente@valledelsol.cl")).thenReturn(true);
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            service.registrar(dto);
+        });
+        assertEquals("El correo ya está registrado", exception.getMessage());
+    }
+
+    @Test
+    void registrar_CaminoFeliz_DatosVaciosPorDefecto() {
+        dto.setNombre("");
+        dto.setRut(null);
+        
+        when(repository.save(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
+
+        Usuario resultado = service.registrar(dto);
+
+        assertEquals("Usuario Nuevo", resultado.getNombre());
+        assertEquals("Sin RUT", resultado.getRut());
+        assertEquals("USER", resultado.getRol());
+    }
+
+    @Test
+    void login_Excepcion_FaltaEmail() {
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            service.login(null, "pass");
+        });
+        assertEquals("Credenciales incorrectas", exception.getMessage());
+    }
+
+    @Test
+    void obtenerTodos_DevuelveLista() {
+        service.obtenerTodos();
+        verify(repository, times(1)).findAll();
+    }
 }

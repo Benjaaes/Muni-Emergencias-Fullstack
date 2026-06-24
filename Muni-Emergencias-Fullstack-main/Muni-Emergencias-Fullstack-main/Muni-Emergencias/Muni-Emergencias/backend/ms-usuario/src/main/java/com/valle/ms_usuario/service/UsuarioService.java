@@ -26,14 +26,13 @@ public class UsuarioService {
 
         String hashPassword = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
 
-        Usuario nuevo = Usuario.builder()
-                .nombre(dto.getNombre() != null && !dto.getNombre().trim().isEmpty() ? dto.getNombre().trim()
-                        : "Usuario Nuevo")
-                .rut(dto.getRut() != null && !dto.getRut().trim().isEmpty() ? dto.getRut().trim() : "Sin RUT")
-                .rol("USER") // Rol por defecto
-                .email(email)
-                .password(hashPassword)
-                .build();
+        Usuario nuevo = new Usuario(
+                dto.getNombre() != null && !dto.getNombre().trim().isEmpty() ? dto.getNombre().trim() : "Usuario Nuevo",
+                dto.getRut() != null && !dto.getRut().trim().isEmpty() ? dto.getRut().trim() : "Sin RUT",
+                "USER", // Rol por defecto
+                email,
+                hashPassword
+        );
 
         return repository.save(nuevo);
     }
