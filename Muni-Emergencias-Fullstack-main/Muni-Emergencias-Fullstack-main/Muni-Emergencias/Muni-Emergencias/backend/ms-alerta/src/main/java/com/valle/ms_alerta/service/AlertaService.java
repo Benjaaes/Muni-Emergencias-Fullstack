@@ -14,12 +14,7 @@ public class AlertaService {
     private AlertaRepository repository;
 
     public Alerta emitirAlerta(AlertaDTO dto) {
-        Alerta nuevaAlerta = Alerta.builder()
-                .tipo(dto.getTipo())
-                .mensaje(dto.getMensaje())
-                .destinatario(dto.getDestinatario())
-                .enviada(true)
-                .build();
+        Alerta nuevaAlerta = new Alerta(dto.getTipo(), dto.getMensaje(), dto.getDestinatario(), true);
         return repository.save(nuevaAlerta);
     }
 

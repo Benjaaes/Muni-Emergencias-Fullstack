@@ -1,11 +1,10 @@
 package com.valle.ms_reporte.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "reportes")
-@Data // Esta anotación de Lombok crea automáticamente los Getters y Setters
 public class Reporte {
 
     @Id
@@ -27,6 +26,38 @@ public class Reporte {
     public Reporte(String tipoEmergencia, String descripcion, String estado) {
         this.tipoEmergencia = tipoEmergencia;
         this.descripcion = descripcion;
+        this.estado = estado;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTipoEmergencia() {
+        return tipoEmergencia;
+    }
+
+    public void setTipoEmergencia(String tipoEmergencia) {
+        this.tipoEmergencia = tipoEmergencia;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
         this.estado = estado;
     }
 }

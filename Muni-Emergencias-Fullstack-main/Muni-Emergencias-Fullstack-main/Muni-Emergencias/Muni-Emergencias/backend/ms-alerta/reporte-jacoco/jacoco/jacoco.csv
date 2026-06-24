@@ -1,0 +1,6 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+,com.valle.ms_alerta,MsAlertaApplication,5,3,0,0,2,1,1,1,1,1
+,com.valle.ms_alerta.dto,AlertaDTO,0,36,0,0,0,12,0,8,0,8
+,com.valle.ms_alerta.service,AlertaService,0,24,0,0,0,4,0,3,0,3
+,com.valle.ms_alerta.controller,AlertaController,0,12,0,0,0,3,0,3,0,3
+,com.valle.ms_alerta.model,Alerta,0,53,0,0,0,17,0,12,0,12
