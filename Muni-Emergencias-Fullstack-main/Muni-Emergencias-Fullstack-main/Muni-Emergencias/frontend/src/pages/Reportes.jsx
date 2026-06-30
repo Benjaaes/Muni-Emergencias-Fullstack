@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
 
 // Fix para los iconos del mapa
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -72,34 +73,50 @@ export default function ReportesPage() {
   const [nuevoTitulo, setNuevoTitulo] = useState('');
   const [nuevaPrioridad, setNuevaPrioridad] = useState('CRÍTICO');
   
-  const [incidentes, setIncidentes] = useState([
-    { id: 1, titulo: 'Incendio de Interfaz - Camilo Olavarría', desc: 'Operador reportando peligro inminente estructural.', prioridad: 'CRÍTICO', color: '#ff3838' },
-    { id: 2, titulo: 'Quema No Autorizada - Ruta 160', desc: 'Columna de humo visible desde el cuadrante sur.', prioridad: 'MEDIO', color: '#ff9f43' }
-  ]);
+  const [incidentes, setIncidentes] = useState([]);
 
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((p) => setCoordenadasReporte([p.coords.latitude, p.coords.longitude]));
     }
+    fetchReportes();
   }, []);
 
+  const fetchReportes = async () => {
+    try {
+      const response = await axios.get('http://localhost:8090/api/reportes');
+      const data = response.data.map(rep => ({
+        id: rep.id,
+        titulo: rep.tipoEmergencia,
+        desc: rep.descripcion,
+        prioridad: rep.estado,
+        color: rep.estado === 'CRÍTICO' ? '#ff3838' : '#ff9f43'
+      })).reverse(); // Mostrar últimos primero
+      setIncidentes(data);
+    } catch (error) {
+      console.error("Error fetching reportes", error);
+    }
+  };
+
   // Función para guardar el nuevo reporte
-  const handleCrearReporte = (e) => {
+  const handleCrearReporte = async (e) => {
     e.preventDefault();
-    const nuevoIncidente = {
-      id: Date.now(),
-      titulo: nuevoTitulo,
-      desc: `Ubicación reportada: [${coordenadasReporte[0].toFixed(4)}, ${coordenadasReporte[1].toFixed(4)}]. Ingresado en tiempo real.`,
-      prioridad: nuevaPrioridad,
-      color: nuevaPrioridad === 'CRÍTICO' ? '#ff3838' : '#ff9f43'
+    const payload = {
+      tipoEmergencia: nuevoTitulo,
+      descripcion: `Ubicación reportada: [${coordenadasReporte[0].toFixed(4)}, ${coordenadasReporte[1].toFixed(4)}]. Ingresado en tiempo real.`,
+      estado: nuevaPrioridad
     };
     
-    // Agregamos el nuevo al principio de la lista
-    setIncidentes([nuevoIncidente, ...incidentes]);
-    
-    // Limpiamos y cerramos
-    setNuevoTitulo('');
-    setShowModal(false);
+    try {
+      await axios.post('http://localhost:8090/api/reportes', payload);
+      // Limpiamos y cerramos
+      setNuevoTitulo('');
+      setShowModal(false);
+      fetchReportes(); // Recargar la lista
+    } catch (error) {
+      console.error("Error creating reporte", error);
+      alert("Error al crear el reporte.");
+    }
   };
 
   return (

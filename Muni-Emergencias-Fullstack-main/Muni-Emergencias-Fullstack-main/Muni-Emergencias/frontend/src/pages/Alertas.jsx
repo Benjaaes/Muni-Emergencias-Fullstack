@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@stitches/react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const MainWrapper = styled('div', { display: 'flex', height: '100vh', width: '100vw', backgroundColor: '#090a0f', color: '#f8fafc', fontFamily: 'system-ui, sans-serif', overflow: 'hidden' });
 const Sidebar = styled('nav', { width: '260px', backgroundColor: '#11131f', borderRight: '1px solid #1e2235', display: 'flex', flexDirection: 'column', padding: '24px' });
@@ -15,6 +16,20 @@ const ControlBtn = styled('button', { padding: '8px 14px', backgroundColor: '#1e
 
 export default function AlertasPage() {
   const navigate = useNavigate();
+  const [alertas, setAlertas] = useState([]);
+
+  useEffect(() => {
+    fetchAlertas();
+  }, []);
+
+  const fetchAlertas = async () => {
+    try {
+      const response = await axios.get('http://localhost:8090/api/alertas/historial');
+      setAlertas(response.data.reverse());
+    } catch (error) {
+      console.error("Error fetching alertas", error);
+    }
+  };
 
   return (
     <MainWrapper>
@@ -43,17 +58,25 @@ export default function AlertasPage() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <Td style={{ fontWeight: '700', color: '#ff3838' }}>#082</Td>
-              <Td style={{ fontWeight: '600' }}>Foco de Incendio Forestal</Td>
-              <Td>Cerro Caracol</Td>
-              <Td><Badget level="critico">CRÍTICO</Badget></Td>
-              <Td><span style={{ color: '#ff3838' }}>● En Combate</span></Td>
-              <Td>
-                <ControlBtn onClick={() => alert("Unidades despachadas.")}>Despachar Unidades</ControlBtn>
-                <ControlBtn>Archivar</ControlBtn>
-              </Td>
-            </tr>
+            {alertas.length === 0 ? (
+              <tr>
+                <Td colSpan="6" style={{ textAlign: 'center' }}>No hay alertas registradas.</Td>
+              </tr>
+            ) : (
+              alertas.map(alerta => (
+                <tr key={alerta.id}>
+                  <Td style={{ fontWeight: '700', color: '#ff3838' }}>#{alerta.id}</Td>
+                  <Td style={{ fontWeight: '600' }}>{alerta.tipo}</Td>
+                  <Td>{alerta.mensaje.substring(0, 30)}...</Td>
+                  <Td><Badget level={alerta.destinatario === 'CRÍTICO' ? 'critico' : 'alto'}>{alerta.destinatario}</Badget></Td>
+                  <Td><span style={{ color: '#ff3838' }}>● En Combate</span></Td>
+                  <Td>
+                    <ControlBtn onClick={() => alert("Unidades despachadas.")}>Despachar Unidades</ControlBtn>
+                    <ControlBtn>Archivar</ControlBtn>
+                  </Td>
+                </tr>
+              ))
+            )}
           </tbody>
         </AlertTable>
       </ContentBody>
