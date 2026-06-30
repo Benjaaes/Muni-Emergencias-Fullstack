@@ -4,24 +4,33 @@ import com.valle.ms_alerta.dto.AlertaDTO;
 import com.valle.ms_alerta.model.Alerta;
 import com.valle.ms_alerta.service.AlertaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping(&quot;/api/alertas&quot;)
-<span class="fc" id="L12">public class AlertaController {</span>
+<span class="fc" id="L13">public class AlertaController {</span>
 
     @Autowired
     private AlertaService service;
 
     @PostMapping(&quot;/enviar&quot;)
-    public Alerta enviar(@RequestBody AlertaDTO dto) {
-<span class="fc" id="L19">        return service.emitirAlerta(dto);</span>
+    public ResponseEntity&lt;Alerta&gt; enviar(@RequestBody AlertaDTO dto) {
+<span class="fc bfc" id="L20" title="All 4 branches covered.">        if (dto == null || dto.getTipo() == null) {</span>
+<span class="fc" id="L21">            return ResponseEntity.badRequest().build();</span>
+        }
+<span class="fc" id="L23">        Alerta alerta = service.emitirAlerta(dto);</span>
+<span class="fc" id="L24">        return ResponseEntity.ok(alerta);</span>
     }
 
     @GetMapping(&quot;/historial&quot;)
-    public List&lt;Alerta&gt; historial() {
-<span class="fc" id="L24">        return service.listarAlertas();</span>
+    public ResponseEntity&lt;List&lt;Alerta&gt;&gt; historial() {
+<span class="fc" id="L29">        List&lt;Alerta&gt; alertas = service.listarAlertas();</span>
+<span class="pc bpc" id="L30" title="1 of 4 branches missed.">        if (alertas == null || alertas.isEmpty()) {</span>
+<span class="fc" id="L31">            return ResponseEntity.noContent().build();</span>
+        }
+<span class="fc" id="L33">        return ResponseEntity.ok(alertas);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

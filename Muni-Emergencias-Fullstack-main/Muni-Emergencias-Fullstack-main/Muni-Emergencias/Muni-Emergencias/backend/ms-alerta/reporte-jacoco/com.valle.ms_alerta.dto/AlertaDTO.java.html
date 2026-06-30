@@ -17,9 +17,15 @@ public class AlertaDTO {
 <span class="fc" id="L17">    public void setTipo(String tipo) { this.tipo = tipo; }</span>
 
 <span class="fc" id="L19">    public String getMensaje() { return mensaje; }</span>
-<span class="fc" id="L20">    public void setMensaje(String mensaje) { this.mensaje = mensaje; }</span>
+    public void setMensaje(String mensaje) { 
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (mensaje == null) {</span>
+<span class="fc" id="L22">            this.mensaje = &quot;&quot;;</span>
+        } else {
+<span class="fc" id="L24">            this.mensaje = mensaje; </span>
+        }
+<span class="fc" id="L26">    }</span>
 
-<span class="fc" id="L22">    public String getDestinatario() { return destinatario; }</span>
-<span class="fc" id="L23">    public void setDestinatario(String destinatario) { this.destinatario = destinatario; }</span>
+<span class="fc" id="L28">    public String getDestinatario() { return destinatario; }</span>
+<span class="fc" id="L29">    public void setDestinatario(String destinatario) { this.destinatario = destinatario; }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

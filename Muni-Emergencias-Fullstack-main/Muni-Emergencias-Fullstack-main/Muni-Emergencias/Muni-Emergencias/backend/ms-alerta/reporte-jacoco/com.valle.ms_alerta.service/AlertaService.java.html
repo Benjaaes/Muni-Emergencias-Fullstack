@@ -1,25 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AlertaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">com.valle.ms_alerta.service</a> &gt; <span class="el_source">AlertaService.java</span></div><h1>AlertaService.java</h1><pre class="source lang-java linenums">package com.valle.ms_alerta.service;
 
 import com.valle.ms_alerta.dto.AlertaDTO;
+import com.valle.ms_alerta.dto.ReporteDTO;
 import com.valle.ms_alerta.model.Alerta;
 import com.valle.ms_alerta.repository.AlertaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 @Service
-<span class="fc" id="L11">public class AlertaService {</span>
+<span class="fc" id="L16">public class AlertaService {</span>
 
     @Autowired
     private AlertaRepository repository;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     public Alerta emitirAlerta(AlertaDTO dto) {
-<span class="fc" id="L17">        Alerta nuevaAlerta = new Alerta(dto.getTipo(), dto.getMensaje(), dto.getDestinatario(), true);</span>
-<span class="fc" id="L18">        return repository.save(nuevaAlerta);</span>
+<span class="fc" id="L25">        Alerta nuevaAlerta = new Alerta(dto.getTipo(), dto.getMensaje(), dto.getDestinatario(), true);</span>
+<span class="fc" id="L26">        return repository.save(nuevaAlerta);</span>
     }
 
     public List&lt;Alerta&gt; listarAlertas() {
-<span class="fc" id="L22">        return repository.findAll();</span>
+<span class="fc" id="L30">        List&lt;Alerta&gt; alertas = new ArrayList&lt;&gt;(repository.findAll());</span>
+        
+        try {
+            // Fetch reports from ms-reporte
+<span class="fc" id="L34">            ReporteDTO[] reportes = restTemplate.getForObject(&quot;http://ms-reporte:8092/api/reportes&quot;, ReporteDTO[].class);</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">            if (reportes != null) {</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">                for (ReporteDTO rep : reportes) {</span>
+<span class="fc" id="L37">                    Alerta alertaFromReporte = new Alerta();</span>
+<span class="fc" id="L38">                    alertaFromReporte.setId(rep.getId() + 10000); // offset id to avoid conflicts in frontend map keys if needed</span>
+<span class="fc" id="L39">                    alertaFromReporte.setTipo(rep.getTipoEmergencia());</span>
+<span class="fc" id="L40">                    alertaFromReporte.setMensaje(rep.getDescripcion());</span>
+<span class="fc" id="L41">                    alertaFromReporte.setDestinatario(rep.getEstado());</span>
+<span class="fc" id="L42">                    alertaFromReporte.setEnviada(true);</span>
+<span class="fc" id="L43">                    alertas.add(alertaFromReporte);</span>
+                }
+            }
+<span class="fc" id="L46">        } catch (Exception e) {</span>
+<span class="fc" id="L47">            System.err.println(&quot;Error fetching reports from ms-reporte: &quot; + e.getMessage());</span>
+<span class="fc" id="L48">        }</span>
+        
+<span class="fc" id="L50">        return alertas;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
