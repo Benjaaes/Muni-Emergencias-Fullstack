@@ -4,6 +4,7 @@ import com.valle.ms_alerta.dto.AlertaDTO;
 import com.valle.ms_alerta.model.Alerta;
 import com.valle.ms_alerta.service.AlertaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,12 +16,20 @@ public class AlertaController {
     private AlertaService service;
 
     @PostMapping("/enviar")
-    public Alerta enviar(@RequestBody AlertaDTO dto) {
-        return service.emitirAlerta(dto);
+    public ResponseEntity<Alerta> enviar(@RequestBody AlertaDTO dto) {
+        if (dto == null || dto.getTipo() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Alerta alerta = service.emitirAlerta(dto);
+        return ResponseEntity.ok(alerta);
     }
 
     @GetMapping("/historial")
-    public List<Alerta> historial() {
-        return service.listarAlertas();
+    public ResponseEntity<List<Alerta>> historial() {
+        List<Alerta> alertas = service.listarAlertas();
+        if (alertas == null || alertas.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(alertas);
     }
-}
+}

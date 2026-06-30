@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +38,9 @@ public class AlertaServiceTest {
 
     @Mock
     private AlertaRepository repository;
+
+    @Mock
+    private RestTemplate restTemplate;
 
     @InjectMocks
     private AlertaService service;
@@ -108,20 +112,33 @@ public class AlertaServiceTest {
     @DisplayName("listarAlertas: Devuelve el historial completo de alertas emitidas por el municipio")
     void listarAlertas_DevuelveHistorialCompleto() {
         when(repository.findAll()).thenReturn(Arrays.asList(alertaIncendio, alertaSismo));
+        
+        com.valle.ms_alerta.dto.ReporteDTO[] reportes = new com.valle.ms_alerta.dto.ReporteDTO[1];
+        com.valle.ms_alerta.dto.ReporteDTO rep = new com.valle.ms_alerta.dto.ReporteDTO();
+        rep.setId(1L);
+        rep.setTipoEmergencia("PRUEBA");
+        rep.setDescripcion("Test desc");
+        rep.setEstado("CRITICO");
+        reportes[0] = rep;
+        
+        when(restTemplate.getForObject(anyString(), eq(com.valle.ms_alerta.dto.ReporteDTO[].class))).thenReturn(reportes);
 
         List<Alerta> resultado = service.listarAlertas();
 
         assertNotNull(resultado);
-        assertEquals(2, resultado.size());
+        assertEquals(3, resultado.size());
         assertEquals("INCENDIO", resultado.get(0).getTipo());
         assertEquals("SISMO", resultado.get(1).getTipo());
+        assertEquals("PRUEBA", resultado.get(2).getTipo());
         verify(repository, times(1)).findAll();
+        verify(restTemplate, times(1)).getForObject(anyString(), eq(com.valle.ms_alerta.dto.ReporteDTO[].class));
     }
 
     @Test
     @DisplayName("listarAlertas: Retorna lista vacía cuando no hay alertas registradas")
     void listarAlertas_RetornaListaVacia_CuandoNoHayAlertas() {
         when(repository.findAll()).thenReturn(Collections.emptyList());
+        when(restTemplate.getForObject(anyString(), eq(com.valle.ms_alerta.dto.ReporteDTO[].class))).thenThrow(new RuntimeException("API error"));
 
         List<Alerta> resultado = service.listarAlertas();
 

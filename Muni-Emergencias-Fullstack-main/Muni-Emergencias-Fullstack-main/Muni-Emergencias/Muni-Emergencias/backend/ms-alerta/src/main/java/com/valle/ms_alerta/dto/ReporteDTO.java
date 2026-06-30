@@ -11,7 +11,13 @@ public class ReporteDTO {
     public String getTipoEmergencia() { return tipoEmergencia; }
     public void setTipoEmergencia(String tipoEmergencia) { this.tipoEmergencia = tipoEmergencia; }
     public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setDescripcion(String descripcion) { 
+        if (descripcion == null) {
+            this.descripcion = "";
+        } else {
+            this.descripcion = descripcion; 
+        }
+    }
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
 }

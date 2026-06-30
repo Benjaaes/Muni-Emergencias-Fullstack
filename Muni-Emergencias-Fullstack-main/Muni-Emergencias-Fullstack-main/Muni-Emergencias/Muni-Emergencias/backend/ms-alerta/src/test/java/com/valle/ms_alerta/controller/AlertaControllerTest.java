@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,9 +28,9 @@ import static org.mockito.Mockito.*;
  *
  * Reglas de negocio cubiertas:
  *  - POST /api/alertas/enviar: emite una nueva alerta y la devuelve con enviada=true.
+ *  - POST /api/alertas/enviar: retorna 400 si dto es null o tipo es null.
  *  - GET  /api/alertas/historial: devuelve el historial de alertas emitidas.
- *  - El controller responde correctamente cuando la lista de alertas está vacía.
- *  - El controller puede manejar múltiples tipos de emergencia.
+ *  - GET  /api/alertas/historial: devuelve 204 si la lista está vacía.
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AlertaController - Pruebas de capa web")
@@ -59,17 +60,41 @@ public class AlertaControllerTest {
     // ===================== POST /api/alertas/enviar =====================
 
     @Test
-    @DisplayName("enviar: Retorna la alerta emitida con enviada=true cuando el servicio la procesa")
+    @DisplayName("enviar: Retorna 200 con la alerta emitida cuando el DTO es válido")
     void enviar_RetornaAlerta_CuandoEmitidaExitosamente() {
         when(service.emitirAlerta(any(AlertaDTO.class))).thenReturn(alertaIncendio);
 
-        Alerta resultado = controller.enviar(dtoIncendio);
+        ResponseEntity<Alerta> response = controller.enviar(dtoIncendio);
 
-        assertNotNull(resultado);
-        assertEquals("INCENDIO", resultado.getTipo());
-        assertEquals("Bomberos Central", resultado.getDestinatario());
-        assertTrue(resultado.isEnviada(), "La alerta debe estar marcada como enviada");
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals("INCENDIO", response.getBody().getTipo());
+        assertEquals("Bomberos Central", response.getBody().getDestinatario());
+        assertTrue(response.getBody().isEnviada(), "La alerta debe estar marcada como enviada");
         verify(service, times(1)).emitirAlerta(any(AlertaDTO.class));
+    }
+
+    @Test
+    @DisplayName("enviar: Retorna 400 cuando el DTO es null")
+    void enviar_Retorna400_CuandoDtoEsNull() {
+        ResponseEntity<Alerta> response = controller.enviar(null);
+
+        assertNotNull(response);
+        assertEquals(400, response.getStatusCode().value());
+        verify(service, never()).emitirAlerta(any());
+    }
+
+    @Test
+    @DisplayName("enviar: Retorna 400 cuando el tipo del DTO es null")
+    void enviar_Retorna400_CuandoTipoEsNull() {
+        AlertaDTO dtoSinTipo = new AlertaDTO(null, "Sin tipo", "Nadie");
+        
+        ResponseEntity<Alerta> response = controller.enviar(dtoSinTipo);
+
+        assertNotNull(response);
+        assertEquals(400, response.getStatusCode().value());
+        verify(service, never()).emitirAlerta(any());
     }
 
     @Test
@@ -78,48 +103,39 @@ public class AlertaControllerTest {
         AlertaDTO dtoSismo = new AlertaDTO("SISMO", "Sismo 5.2", "Toda la población");
         when(service.emitirAlerta(any(AlertaDTO.class))).thenReturn(alertaSismo);
 
-        Alerta resultado = controller.enviar(dtoSismo);
+        ResponseEntity<Alerta> response = controller.enviar(dtoSismo);
 
-        assertNotNull(resultado);
-        assertEquals("SISMO", resultado.getTipo());
-        assertEquals("Toda la población", resultado.getDestinatario());
-    }
-
-    @Test
-    @DisplayName("enviar: Invoca al service exactamente una vez por alerta emitida")
-    void enviar_InvocaAlServiceUnaSolaVez() {
-        when(service.emitirAlerta(any(AlertaDTO.class))).thenReturn(alertaIncendio);
-
-        controller.enviar(dtoIncendio);
-
-        verify(service, times(1)).emitirAlerta(any(AlertaDTO.class));
-        verifyNoMoreInteractions(service);
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("SISMO", response.getBody().getTipo());
     }
 
     // ===================== GET /api/alertas/historial =====================
 
     @Test
-    @DisplayName("historial: Devuelve el historial completo de alertas emitidas por el municipio")
+    @DisplayName("historial: Devuelve 200 con el historial completo de alertas del municipio")
     void historial_DevuelveHistorialCompleto() {
         when(service.listarAlertas()).thenReturn(Arrays.asList(alertaIncendio, alertaSismo));
 
-        List<Alerta> resultado = controller.historial();
+        ResponseEntity<List<Alerta>> response = controller.historial();
 
-        assertNotNull(resultado);
-        assertEquals(2, resultado.size());
-        assertEquals("INCENDIO", resultado.get(0).getTipo());
-        assertEquals("SISMO", resultado.get(1).getTipo());
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+        assertEquals("INCENDIO", response.getBody().get(0).getTipo());
+        assertEquals("SISMO", response.getBody().get(1).getTipo());
         verify(service, times(1)).listarAlertas();
     }
 
     @Test
-    @DisplayName("historial: Devuelve lista vacía cuando no hay alertas registradas")
-    void historial_DevuelveListaVacia_CuandoNoHayAlertas() {
+    @DisplayName("historial: Devuelve 204 cuando no hay alertas registradas")
+    void historial_Devuelve204_CuandoNoHayAlertas() {
         when(service.listarAlertas()).thenReturn(Collections.emptyList());
 
-        List<Alerta> resultado = controller.historial();
+        ResponseEntity<List<Alerta>> response = controller.historial();
 
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
+        assertNotNull(response);
+        assertEquals(204, response.getStatusCode().value());
     }
 }

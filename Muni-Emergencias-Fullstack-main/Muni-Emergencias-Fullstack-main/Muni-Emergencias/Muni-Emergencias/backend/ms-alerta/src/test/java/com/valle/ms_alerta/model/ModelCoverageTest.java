@@ -26,6 +26,9 @@ public class ModelCoverageTest {
         assertEquals("Temblor leve", alerta2.getMensaje());
         assertEquals("Defensa Civil", alerta2.getDestinatario());
         assertFalse(alerta2.isEnviada());
+        
+        alerta.setMensaje(null);
+        assertEquals("", alerta.getMensaje());
     }
 
     @Test
@@ -43,5 +46,25 @@ public class ModelCoverageTest {
         assertEquals("INUNDACION", dto2.getTipo());
         assertEquals("Mucha agua", dto2.getMensaje());
         assertEquals("Todos", dto2.getDestinatario());
+        
+        dto.setMensaje(null);
+        assertEquals("", dto.getMensaje());
+    }
+
+    @Test
+    public void testReporteDTO() {
+        com.valle.ms_alerta.dto.ReporteDTO reporte = new com.valle.ms_alerta.dto.ReporteDTO();
+        reporte.setId(10L);
+        reporte.setTipoEmergencia("FUEGO");
+        reporte.setDescripcion("Fuego fuerte");
+        reporte.setEstado("CRITICO");
+
+        assertEquals(10L, reporte.getId());
+        assertEquals("FUEGO", reporte.getTipoEmergencia());
+        assertEquals("Fuego fuerte", reporte.getDescripcion());
+        assertEquals("CRITICO", reporte.getEstado());
+        
+        reporte.setDescripcion(null);
+        assertEquals("", reporte.getDescripcion());
     }
 }
